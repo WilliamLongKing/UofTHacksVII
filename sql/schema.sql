@@ -4,7 +4,7 @@ GO
 CREATE TABLE myschema.tracks(
     spotifyID varchar(100) NOT NULL PRIMARY KEY,
     title varchar(100),
-    author varchar(100),
+    artist varchar(100),
     durationMs int,
     songKey int,
     mode int,
