@@ -36,38 +36,59 @@ CHECK_SONG_EXISTS = '''
       AND artist = %s
 '''
 
-def connect():
-    conn = None
-    try:
-        print "trying"
-        conn = psycopg2.connect(database="songs", user = "postgres", password = "test", host = "35.225.65.195")
-        print "success"
-    except:
-        print "failed"
-    return conn
+SELECT_SONGS_IN_DATE_RANGE = '''
+    SELECT * FROM myschema.tracks as tracks
+      JOIN myschema.charts as charts
+        ON charts.spotifyID = tracks.spotifyID
+    WHERE charts.chartDate <= to_date(%s,'YYYY-MM-DD')
+       OR charts.chartDate >= to_date(%s,'YYYY-MM-DD')
+'''
 
-def checkSongExists(song_title, artist):
-    conn = connect()
-    cur = conn.cursor()
+class Database:
+    DB_CONNECTION = None
 
-    cur.execute(CHECK_SONG_EXISTS, (song_title, artist))
+    @staticmethod
+    def connect():
+        try:
+            print("trying")
+            Database.DB_CONNECTION = psycopg2.connect(database="songs", user = "postgres", password = "test", host = "35.225.65.195")
+            print("success")
+        except:
+            print("failed")
 
-    # returns the spotify ID if the song exists already, or a None type
-    return cur.fetchone()
+    @staticmethod
+    def cleanup():
+        Database.DB_CONNECTION.close()
 
-def addSongToTable(song):
-    conn = connect()
-    cur = conn.cursor()
+    @staticmethod
+    def checkSongExists(song_title, artist):
+        cur = Database.DB_CONNECTION.cursor()
 
-    cur.execute(ADD_SONG, (song['song_id'], song['song_title'], song['artist']))
-    cur.execute(UPDATE_SPOTIFY_SONG_INFO,
-                (song['duration'], song['key'], song['mode'],
-                 song['time_signature'], song['acousticness'], song['danceability'],
-                 song['enenrgy'], song['instrumentalness'], song['liveness'],
-                 song['loudness'], song['speechiness'], song['valence'],
-                 song['tempo'], song['song_id']))
-    cur.excute(ADD_SONG, (song['song_id'], song['chartDate'], song['ranking']))
+        cur.execute(CHECK_SONG_EXISTS, (song_title, artist))
 
-    cur.commit()
-    cur.close()
-    conn.close()
+        # returns the spotify ID if the song exists already, or a None type
+        return cur.fetchone()
+
+    @staticmethod
+    def addSongToTable(song):
+        cur = Database.DB_CONNECTION.cursor()
+
+        cur.execute(ADD_SONG, (song['song_id'], song['song_title'], song['artist']))
+        cur.execute(UPDATE_SPOTIFY_SONG_INFO,
+                    (song['duration'], song['key'], song['mode'],
+                    song['time_signature'], song['acousticness'], song['danceability'],
+                    song['enenrgy'], song['instrumentalness'], song['liveness'],
+                    song['loudness'], song['speechiness'], song['valence'],
+                    song['tempo'], song['song_id']))
+        cur.excute(ADD_SONG, (song['song_id'], song['chartDate'], song['ranking']))
+
+        cur.commit()
+        cur.close()
+
+    @staticmethod
+    def selectSongsInDateRange(startDate, endDate):
+        cur = Database.DB_CONNECTION.cursor()
+
+        cur.execute(SELECT_SONGS_IN_DATE_RANGE, endDate, startDate)
+        cur.commit()
+        cur.close()
