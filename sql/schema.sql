@@ -1,8 +1,7 @@
 CREATE SCHEMA myschema;
-GO
 
 CREATE TABLE myschema.tracks(
-    spotifyID varchar(100) NOT NULL PRIMARY KEY,
+    spotifyID varchar(100) PRIMARY KEY,
     title varchar(100),
     artist varchar(100),
     durationMs int,
@@ -19,12 +18,11 @@ CREATE TABLE myschema.tracks(
     valence float,
     tempo float
 );
-GO
 
 CREATE TABLE myschema.charts(
-    spotifyID varchar(100) NOT NULL FOREIGN KEY,
-    chartDate varchar(10),
+    spotifyID varchar(100),
+    chartDate date,
     ranking int,
-    primary key (spotifyID, chartDate)
+    PRIMARY KEY (spotifyID, chartDate),
+    FOREIGN KEY (spotifyID) REFERENCES myschema.tracks(spotifyID)
 );
-GO
