@@ -34,5 +34,6 @@ def spotify_info(artist, song):
     # valence = data["valence"]   # musical positiveness conveyed (1.0 being highest)
     # tempo = data["tempo"]       
     # time_signature = data["time_signature"]
+    # duration = data["duration_ms"]
 
 # spotify_info("mac miller", "hurt feelings")

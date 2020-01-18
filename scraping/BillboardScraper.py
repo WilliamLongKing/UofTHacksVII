@@ -46,6 +46,11 @@ while year >= 2019:     #adjust this value to extend the history of data retriev
 
         if ranking.text == '1' :
             print(ranking.text + ". " + song_title.text + " - " + artist.text)
+
+        #TODO: check if song exists in db already
+
+        #TODO: if not, add song to db
+        
         # print(ranking.text)
         # print(artist.text)
         # print(song_title.text)
