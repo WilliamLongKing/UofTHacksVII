@@ -2,7 +2,7 @@ import requests
 
 SPOTIFY_SEARCH_URL = 'https://api.spotify.com/v1/search'
 SPOTIFY_SONG_FEATURES_URL = 'https://api.spotify.com/v1/audio-features/'
-HEADER = {"Authorization" : "Bearer BQAP2c1ixhdRwBMT5KzbDAQUHilwERr8UMxEgm2UMpPqR5e5hORefRnZrbBWD-dRorxR07oTmtG2OSQlsQjX-A4dB7LUz7d08-QnmXke5KFsjS_I9kGs9jCJ7XhuMuW4WaCfKkx7B8Y"}
+HEADER = {"Authorization" : "Bearer BQAOirxJpMBTNTAKQOHjUBLaYae4B7_g4CR5gNAo8pLt60Mp8ZTMCXvbaLqSYa8uqz111m7Gc7bNL_TpWC3rboi1sZqTgFqFeaRAPvYMwJFnc7XnsuhkfxpkzuOONK1jNoSLnlMlORY"}
 
 def spotify_info(artist, song):
     # song = song.replace(' ', '%20')
@@ -13,12 +13,14 @@ def spotify_info(artist, song):
     r = requests.get(url=SPOTIFY_SEARCH_URL, params=PARAMS, headers=HEADER)
     data = r.json()
 
+    print(data)
+
     song_id = data["tracks"]["items"][0]["id"]
     print(song_id)
     r = requests.get(url=SPOTIFY_SONG_FEATURES_URL+song_id, headers=HEADER)
     data = r.json()
 
-    print(data)
+    
 
     return(data)
 

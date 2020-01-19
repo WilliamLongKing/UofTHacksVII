@@ -1,15 +1,19 @@
+import sys
+sys.path.append("..")
 import requests
 from bs4 import BeautifulSoup
 import time
-#import pdb
+from backend.common.connect import Database
+from SpotifySongInfo import spotify_info
+
 
 #if year divisible by 4, it's a leap year -> feb + 1
 DAYS_IN_MONTH =[31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 WEEK = 7
 
-year = 2020
-month = 1
-day = 17
+year = 2019
+month = 11
+day = 8
 
 # {
 #     JAN = 31
@@ -26,11 +30,11 @@ day = 17
 #     DEC = 31
 # }
 
-#TODO: figure out how to store this data
-#TODO: get song data from spotify
+Database.connect()
 
 while year >= 2019:     #adjust this value to extend the history of data retrieval
-    URL = 'https://www.billboard.com/charts/hot-100/'+str(year)+'-'+str(month).zfill(2)+'-'+str(day).zfill(2) 
+    date = str(year)+'-'+str(month).zfill(2)+'-'+str(day).zfill(2)
+    URL = 'https://www.billboard.com/charts/hot-100/'+date 
     print(URL)
 
     page = requests.get(URL)
@@ -40,17 +44,79 @@ while year >= 2019:     #adjust this value to extend the history of data retriev
     chart_elems = results.find_all(class_='chart-list__element display--flex')
 
     for chart_elem in chart_elems:
-        ranking = chart_elem.find('span', class_='chart-element__rank__number')
-        artist = chart_elem.find('span', class_='chart-element__information__artist text--truncate color--secondary')
-        song_title = chart_elem.find('span', class_='chart-element__information__song text--truncate color--primary')
+        ranking = chart_elem.find('span', class_='chart-element__rank__number').text
+        artist = chart_elem.find('span', class_='chart-element__information__artist text--truncate color--secondary').text
+        song_title = chart_elem.find('span', class_='chart-element__information__song text--truncate color--primary').text
 
-        if ranking.text == '1' :
-            print(ranking.text + ". " + song_title.text + " - " + artist.text)
+        # if ranking == '1' :
+        print(ranking + ". " + song_title + " - " + artist)
 
         #TODO: check if song exists in db already
+        try:
+            songID = Database.checkSongExists(song_title, artist)
+            print(songID)
+        except:
+            pass
 
-        #TODO: if not, add song to db
-        
+        if songID == None:
+            time.sleep(3)
+
+            try:
+                spotifyData = spotify_info(artist, song_title)
+
+                songData ={
+                    'danceability' : spotifyData["danceability"],           #how suitable for dancing the track is
+                    'energy' : spotifyData["energy"],                       #measure of intensity and activity
+                    'key' : spotifyData["key"],                             # overall key of the track
+                    'loudness' : spotifyData["loudness"],                   # overall loudness in dB, typically from -60 to 0
+                    'mode' : spotifyData["mode"],                           # major = 1, minor = 0
+                    'speechiness' : spotifyData["speechiness"],             #presence of spoken words in a track
+                    'acousticness' : spotifyData["acousticness"],           # confidence measure of whether track is acoustic
+                    'instrumentalness' : spotifyData["instrumentalness"],   #predicts whether a trackc contains no vocals
+                    'liveness' : spotifyData["liveness"],                   # detects presence of an audience in recording
+                    'valence' : spotifyData["valence"],                     # musical positiveness conveyed (1.0 being highest)
+                    'tempo' : spotifyData["tempo"],       
+                    'time_signature' : spotifyData["time_signature"],
+                    'duration' : spotifyData["duration_ms"],
+                    'artist' : artist,
+                    'ranking' : ranking,
+                    'song_id' : spotifyData["id"], 
+                    'song_title' : song_title
+                }
+
+                Database.addSongToTable(songData, date)
+            except:
+                try:
+                    spotifyData = spotify_info(artist.split('Featuring', 1)[0].split('&', 1)[0], song_title)
+
+                    songData ={
+                        'danceability' : spotifyData["danceability"],           #how suitable for dancing the track is
+                        'energy' : spotifyData["energy"],                       #measure of intensity and activity
+                        'key' : spotifyData["key"],                             # overall key of the track
+                        'loudness' : spotifyData["loudness"],                   # overall loudness in dB, typically from -60 to 0
+                        'mode' : spotifyData["mode"],                           # major = 1, minor = 0
+                        'speechiness' : spotifyData["speechiness"],             #presence of spoken words in a track
+                        'acousticness' : spotifyData["acousticness"],           # confidence measure of whether track is acoustic
+                        'instrumentalness' : spotifyData["instrumentalness"],   #predicts whether a trackc contains no vocals
+                        'liveness' : spotifyData["liveness"],                   # detects presence of an audience in recording
+                        'valence' : spotifyData["valence"],                     # musical positiveness conveyed (1.0 being highest)
+                        'tempo' : spotifyData["tempo"],       
+                        'time_signature' : spotifyData["time_signature"],
+                        'duration' : spotifyData["duration_ms"],
+                        'artist' : artist,
+                        'ranking' : ranking,
+                        'song_id' : spotifyData["id"], 
+                        'song_title' : song_title
+                    }
+
+                    Database.addSongToTable(songData, date)
+                except:
+                    pass
+        else:
+            try:
+                Database.addRanking(ranking, songID, date)
+            except:
+                pass
         # print(ranking.text)
         # print(artist.text)
         # print(song_title.text)
@@ -61,6 +127,6 @@ while year >= 2019:     #adjust this value to extend the history of data retriev
             year -= 1
             month=12
         day = DAYS_IN_MONTH[month-1] + day
-    time.sleep(20)
+    #time.sleep(10)
 
         
