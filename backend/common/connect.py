@@ -42,11 +42,15 @@ CHECK_SONG_EXISTS = '''
 '''
 
 SELECT_SONGS_IN_DATE_RANGE = '''
-    SELECT DISTINCT ON (tracks.spotifyID, charts.chartDate) * FROM myschema.tracks as tracks
+    SELECT DISTINCT ON (tracks.spotifyID, charts.chartDate)
+           tracks.title, tracks.artist, tracks.energy, tracks.loudness, 
+           tracks.valence, tracks.tempo, chart.ranking, chart.chartDate
+      FROM myschema.tracks as tracks
       JOIN myschema.charts as charts
         ON charts.spotifyID = tracks.spotifyID
     WHERE charts.chartDate <= to_date(%s,'YYYY-MM-DD')
       AND charts.chartDate >= to_date(%s,'YYYY-MM-DD')
+    ORDER BY charts.chartDate ASC;
 '''
 
 CREATE_SCHEMA = 'CREATE SCHEMA myschema'
@@ -114,11 +118,8 @@ class Database:
         try:
             print("trying")
             Database.DB_CONNECTION = psycopg2.connect(database="songs", user = "postgres", password = "test", host = "35.225.65.195")
-            # firebase = pyrebase.initialize_app(Database.config)
-            # Database.DB_CONNECTION = firebase.database()
             print("success")
         except:
-            #print("failed")
             print("Unexpected error:", sys.exc_info()[0])
             raise
 
@@ -149,14 +150,7 @@ class Database:
     @staticmethod
     def checkSongExists(song_title, artist):
         cur = Database.DB_CONNECTION.cursor()
-        # data = {"spotifyID" : "0HPD5WQqrq7wPWR7P7Dw1i", "title" : "TiK ToK", "artist":"Ke$ha"}
-        # Database.DB_CONNECTION.child("songs").push(data)
         cur.execute(CHECK_SONG_EXISTS, (str(song_title), str(artist)))
-
-        # songsByArtist = Database.DB_CONNECTION.child("songs").child("title").get()
-        #song = Database.DB_CONNECTION.child("songs").order_by_child("title").equal_to(song_title).get()
-
-        # print(songsByArtist.val());
 
         result = cur.fetchone()
         cur.close()
@@ -177,7 +171,6 @@ class Database:
                     song['energy'], song['instrumentalness'], song['liveness'],
                     song['loudness'], song['speechiness'], song['valence'],
                     song['tempo'], song['song_id']))
-        #cur.excute(ADD_SONG, (song['song_id'], song['chartDate'], song['ranking']))
 
         Database.DB_CONNECTION.commit()
         cur.close()
@@ -192,8 +185,7 @@ class Database:
         result = cur.fetchall()
         cur.close()
 
-        #print(result)
-
+        #writes data to a csv file
         with open('output.csv','w') as out:
             wr=csv.writer(out)
             wr.writerow(["spotifyID", 
@@ -239,8 +231,8 @@ class Database:
 
         cur.close()
 
-Database.connect()
-Database.selectSongsInDateRange("2018-01-01", "2019-11-25")
+# Database.connect()
+# Database.selectSongsInDateRange("2018-01-01", "2019-11-25")
 # Database.makeTable()
 
 # Database.addSongToTable({
