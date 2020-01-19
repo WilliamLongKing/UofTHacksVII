@@ -117,7 +117,7 @@ while year >= 2019:     #adjust this value to extend the history of data retriev
 
     day -= WEEK
     if day < 1:
-        month -= 1;
+        month -= 1
         if month < 1: 
             year -= 1
             month=12
