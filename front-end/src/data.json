@@ -1,0 +1,13 @@
+[
+  { "year": "2006/01/01", "happy": 10, "sad": 15, "angry": 9, "excited": 6, "relaxed": 17, "neutral": 7 },
+  { "year": "2007/01/01", "happy": 12, "sad": 18, "angry": 9, "excited": 4, "relaxed": 17, "neutral": 7 },
+  { "year": "2008/01/01", "happy": 5, "sad": 20, "angry": 8, "excited": 2, "relaxed": 17, "neutral": 7 },
+  { "year": "2009/01/01", "happy": 1, "sad": 15, "angry": 5, "excited": 4, "relaxed": 17, "neutral": 7 },
+  { "year": "2010/01/01", "happy": 2, "sad": 10, "angry": 4, "excited": 2, "relaxed": 17, "neutral": 7 },
+  { "year": "2011/01/01", "happy": 3, "sad": 12, "angry": 6, "excited": 3, "relaxed": 17, "neutral": 7 },
+  { "year": "2012/01/01", "happy": 4, "sad": 15, "angry": 8, "excited": 1, "relaxed": 17, "neutral": 7 },
+  { "year": "2013/01/01", "happy": 6, "sad": 11, "angry": 9, "excited": 4, "relaxed": 17, "neutral": 7 },
+  { "year": "2014/01/01", "happy": 10, "sad": 13, "angry": 9, "excited": 5, "relaxed": 17, "neutral": 7 },
+  { "year": "2015/01/01", "happy": 16, "sad": 19, "angry": 6, "excited": 9, "relaxed": 17, "neutral": 7 },
+  { "year": "2016/01/01", "happy": 19, "sad": 17, "angry": 5, "excited": 7, "relaxed": 17, "neutral": 7 }
+]
