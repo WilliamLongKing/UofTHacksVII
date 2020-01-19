@@ -12,7 +12,7 @@ DAYS_IN_MONTH =[31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 WEEK = 7
 
 year = 2019
-month = 11
+month = 1
 day = 8
 
 # {
@@ -51,12 +51,7 @@ while year >= 2019:     #adjust this value to extend the history of data retriev
         # if ranking == '1' :
         print(ranking + ". " + song_title + " - " + artist)
 
-        #TODO: check if song exists in db already
-        try:
-            songID = Database.checkSongExists(song_title, artist)
-            print(songID)
-        except:
-            pass
+        songID = Database.checkSongExists(song_title, artist)
 
         if songID == None:
             time.sleep(3)
@@ -111,15 +106,15 @@ while year >= 2019:     #adjust this value to extend the history of data retriev
 
                     Database.addSongToTable(songData, date)
                 except:
+                    Database.rollback()
                     pass
         else:
             try:
                 Database.addRanking(ranking, songID, date)
             except:
+                Database.rollback()
                 pass
-        # print(ranking.text)
-        # print(artist.text)
-        # print(song_title.text)
+
     day -= WEEK
     if day < 1:
         month -= 1;

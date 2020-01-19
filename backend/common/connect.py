@@ -42,11 +42,11 @@ CHECK_SONG_EXISTS = '''
 '''
 
 SELECT_SONGS_IN_DATE_RANGE = '''
-    SELECT * FROM myschema.tracks as tracks
+    SELECT DISTINCT ON (tracks.spotifyID, charts.chartDate) * FROM myschema.tracks as tracks
       JOIN myschema.charts as charts
         ON charts.spotifyID = tracks.spotifyID
     WHERE charts.chartDate <= to_date(%s,'YYYY-MM-DD')
-       OR charts.chartDate >= to_date(%s,'YYYY-MM-DD')
+      AND charts.chartDate >= to_date(%s,'YYYY-MM-DD')
 '''
 
 CREATE_SCHEMA = 'CREATE SCHEMA myschema'
@@ -87,6 +87,17 @@ DELETE_SONG = '''
     WHERE  spotifyID = \'06AKEBrKUckW0KREUWRnvT\'
 '''
 
+DELETE_DUPLICATES = '''
+DELETE FROM myschema.charts WHERE spotifyID NOT IN 
+(SELECT spotifyID FROM (
+    SELECT DISTINCT ON (spotifyID) *
+  FROM myschema.charts) as id);
+DELETE FROM myschema.tracks WHERE spotifyID NOT IN 
+(SELECT spotifyID FROM (
+    SELECT DISTINCT ON (spotifyID) *
+  FROM myschema.tracks) as id);
+'''
+
 class Database:
     # config = {
     #     "apiKey": "AIzaSyA2rO0ev8ZqLxoBmJ8uHiiquOAoMKZVTLo",
@@ -114,6 +125,10 @@ class Database:
     @staticmethod
     def cleanup():
         Database.DB_CONNECTION.close()
+
+    @staticmethod
+    def rollback():
+        Database.DB_CONNECTION.rollback()
 
     @staticmethod
     def makeTable():
@@ -208,15 +223,24 @@ class Database:
 
     @staticmethod
     def addRanking(ranking, songID, date):
-        cur = cur = Database.DB_CONNECTION.cursor()
+        cur = Database.DB_CONNECTION.cursor()
 
         cur.execute(ADD_RANKING, (songID, date, ranking))
         Database.DB_CONNECTION.commit()
 
         cur.close()
+    
+    @staticmethod
+    def deleteDuplicates():
+        cur = Database.DB_CONNECTION.cursor()
+
+        cur.execute(DELETE_DUPLICATES)
+        Database.DB_CONNECTION.commit()
+
+        cur.close()
 
 Database.connect()
-Database.selectSongsInDateRange("2018-12-01", "2020-02-01")
+Database.selectSongsInDateRange("2018-01-01", "2019-11-25")
 # Database.makeTable()
 
 # Database.addSongToTable({
