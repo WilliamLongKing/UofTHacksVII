@@ -93,7 +93,7 @@ def getMoodBreakdown(billboardChart, date):
     # print(neutral)
     # print("FINAL: " + str(happy + sad + excited + relaxed + neutral))
     breakdown = {
-        "week": date,
+        "week": date.strftime("%Y-%m-%d"),
         "happy": happy/denominator*100,
         "sad": sad/denominator*100,
         "angry": angry/denominator*100,
@@ -109,7 +109,7 @@ def yearlyData():
     year = 2019  # request.args.get('year')
     Database.connect()
     data = Database.selectSongsInDateRange(
-        str(year) + "-01-01", str(year) + "-01-08")
+        str(year) + "-01-01", str(year) + "-12-31")
     lastWeek = date(year, 1, 1)
     billboardChart = []
     retval = []
@@ -124,9 +124,9 @@ def yearlyData():
             billboardChart.append(event[:])
             # reset date
     print(retval)
-    return retval
+    return jsonify(retval)
 
 
 if __name__ == '__main__':
-    #app.run(debug=True, port=4999)
-    yearlyData()
+    app.run(debug=True, port=4999)
+    #yearlyData()

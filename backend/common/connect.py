@@ -1,8 +1,5 @@
 import psycopg2
-import pyrebase
 import sys
-import firebase_admin
-from firebase_admin import credentials
 import csv
 
 ADD_SONG = '''
@@ -232,7 +229,7 @@ class Database:
         cur.close()
 
 Database.connect()
-print(Database.selectSongsInDateRange("2019-01-01", "2019-02-01")
+print(Database.selectSongsInDateRange("2019-01-01", "2019-02-01"))
 # Database.makeTable()
 
 # Database.addSongToTable({
@@ -257,4 +254,4 @@ print(Database.selectSongsInDateRange("2019-01-01", "2019-02-01")
 
 # Database.deleteSong()
 
-# Database.checkSongExists("TiK ToK", "Ke$ha")
+# Database.checkSongExists("TiK ToK", "Ke$ha"))

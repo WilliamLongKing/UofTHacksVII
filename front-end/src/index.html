@@ -1,0 +1,115 @@
+<html>
+  <div id="chart">
+  </div>
+</html>
+
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script>
+    // var xmlHttp = new XMLHttpRequest();
+    // xmlHttp.open("GET", "http://127.0.0.1:4999/yearly_chart_data?year=2019");
+    // xmlHttp.send();
+
+    // console.log(xmlHttp.responseText);
+  var song_data;
+        var happy = [];
+        var angry = [];
+        var excited = [];
+        var neutral = [];
+        var relaxed = [];
+        var sad = [];
+    $.get("http://127.0.0.1:4999/yearly_chart_data?year=2019", function(data, status){
+        console.log(data[0].happy);
+        //song_data = data;
+        for(var i =0; i<data.length; i++){
+
+            happy.push(data[i].happy);
+            angry.push(data[i].angry);
+            excited.push(data[i].excited);
+            neutral.push(data[i].neutral);
+            relaxed.push(data[i].relaxed);
+            sad.push(data[i].sad);
+        }
+    })
+
+    console.log(happy);
+    
+  var options = {
+      series: [{
+      name: 'Happy',
+      data: happy
+    }, {
+      name: 'Angry',
+      data: angry
+    }, {
+      name: 'Excited',
+      data: excited
+    }, {
+      name: 'Neutral',
+      data: neutral
+    }, {
+      name: 'Relaxed',
+      data: relaxed
+    }, {
+      name: 'Sad',
+      data: sad
+    }],
+      chart: {
+      type: 'bar',
+      height: 350,
+      stacked: true,
+      stackType: '100%'
+    },
+    plotOptions: {
+      bar: {
+        horizontal: false,
+      },
+    },
+    stroke: {
+      width: 1,
+      colors: ['#fff']
+    },
+    title: {
+      text: '100% Stacked Bar'
+    },
+    xaxis: {
+      categories: [... Array(52).keys()],
+    },
+    tooltip: {
+      y: {
+        formatter: function (val) {
+          return val;
+        }
+      }
+    },
+    fill: {
+      opacity: 1
+    },
+    legend: {
+      position: 'top',
+      horizontalAlign: 'left',
+      offsetX: 40
+    }
+  };
+  var chart = new ApexCharts(document.querySelector("#chart"), options);
+  chart.render();
+</script>
+
+<style>
+  @import url(https://fonts.googleapis.com/css?family=Roboto);
+
+body {
+  font-family: Roboto, sans-serif;
+  display:flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 95vw;
+}
+
+#chart {
+  max-width: 95vw;
+  margin: 35px auto;
+}
+
+</style>

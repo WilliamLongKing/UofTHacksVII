@@ -1,12 +1,12 @@
 import React from 'react';
 import {render} from 'react-dom';
 import './App.css';
-import BarChart from './BarChart.js';
+import ApexChart from './BarChart.js';
 
 function App() {
   return (
     <div className="App">
-      <BarChart id='BarChart' />
+      <ApexChart/>
     </div>
   );
 }
