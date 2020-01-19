@@ -231,8 +231,8 @@ class Database:
 
         cur.close()
 
-# Database.connect()
-# Database.selectSongsInDateRange("2018-01-01", "2019-11-25")
+Database.connect()
+print(Database.selectSongsInDateRange("2019-01-01", "2019-02-01")
 # Database.makeTable()
 
 # Database.addSongToTable({
