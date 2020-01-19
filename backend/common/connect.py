@@ -42,15 +42,15 @@ CHECK_SONG_EXISTS = '''
 '''
 
 SELECT_SONGS_IN_DATE_RANGE = '''
-    SELECT DISTINCT ON (tracks.spotifyID, charts.chartDate)
+    SELECT
            tracks.title, tracks.artist, tracks.energy, tracks.loudness, 
-           tracks.valence, tracks.tempo, chart.ranking, chart.chartDate
+           tracks.valence, tracks.tempo, charts.ranking, charts.chartDate
       FROM myschema.tracks as tracks
       JOIN myschema.charts as charts
         ON charts.spotifyID = tracks.spotifyID
     WHERE charts.chartDate <= to_date(%s,'YYYY-MM-DD')
       AND charts.chartDate >= to_date(%s,'YYYY-MM-DD')
-    ORDER BY charts.chartDate ASC;
+    ORDER BY charts.chartDate ASC, charts.ranking ASC;
 '''
 
 CREATE_SCHEMA = 'CREATE SCHEMA myschema'
